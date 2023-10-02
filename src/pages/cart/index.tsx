@@ -1,4 +1,11 @@
+import { useContext } from 'react'
+
+import { CartContext } from '../../contexts/CartContext'
+import { Link } from 'react-router-dom'
+
 export default function Cart() {
+  const { cart, resultCart, addItemCart, removeItemCart } = useContext(CartContext)
+
   return (
     <div>
       <main className="w-full max-w-7xl mx-auto">
@@ -6,34 +13,49 @@ export default function Cart() {
           Meu Carrinho
         </h1>
 
-        <section className="flex items-center justify-between border-b-2 border-gray-300">
-          <img
-            className="w-28"
-            src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/MV7N2?wid=1000&hei=1000&fmt=jpeg&qlt=95&.v=1551489688005" 
-            alt="Foto do produto" />
+        {cart.length === 0 && (
+          <div className='flex flex-col justify-center items-center'>
+            <p className='font-medium'>Ops, seu carrinho está vazio...</p>
+            <Link className='bg-slate-600 my-3 p-1 px-3 text-white font-medium rounded' to='/'>Acessar Produtos</Link>
+          </div>
+        )}
 
-            <strong>Preço: R$1.290,00</strong>
+        {cart.map( (item) => (
+          <section key={item.id} className="flex items-center justify-between border-b-2 border-gray-300">
+            <img
+              className="w-28"
+              src={item.cover} 
+              alt={item.title} />
+
+            <strong>Preço: {item.price.toLocaleString("pt-BR", {
+                  style: "currency", currency: "BRL"
+                })}</strong>
 
             <div className="flex gap-3">
-              <button className="bg-slate-600 px-2 rounded text-white flex items-center justify-center">
+              <button onClick={() => removeItemCart(item)} className="bg-slate-600 px-2 rounded text-white flex items-center justify-center">
                 -
               </button>
 
-              <span>2</span>
+              <span>{item.amount}</span>
 
-              <button className="bg-slate-600 px-2 rounded text-white flex items-center justify-center">
+              <button onClick={() => addItemCart(item)} className="bg-slate-600 px-2 rounded text-white flex items-center justify-center">
                 +
               </button>
             </div>
 
             <strong className="float-right">
-              SubTotal: R$2.580,00
+              SubTotal: {item.total.toLocaleString("pt-BR", {
+                  style: "currency", currency: "BRL"
+                })}
             </strong>
         </section>
+        ))}
 
-        <div>
-          <p className="font-bold mt-4">Total: R$2.580,00</p>
-        </div>
+        {cart.length !== 0 && (
+          <div>
+            <p className="font-bold mt-4">Total: {resultCart}</p>
+          </div>
+        )}
       </main>
     </div>
   )
